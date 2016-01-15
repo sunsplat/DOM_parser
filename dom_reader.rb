@@ -7,21 +7,21 @@ ParsedStringStruct = Struct.new(:type, :classes, :id, :name, :src, :title)
 
   def initialize(string)
     
-		parsed_string = ParsedStringStruct.new
+	parsed_string = ParsedStringStruct.new
 
-		#type
-		regex = /<(.*?)\s/
-    type = string.match(regex)
+	#type
+    regex = /<(.*?)\s/
+    type = string.scan(regex)
     parsed_string.type = type[1] if type
 
     #class
     regex =/class='(.*?)'/
-    classes = string.match(regex)
+    classes = string.scan(regex)
     parsed_string.classes = classes[1] if classes
 
     #id
     regex = /id='(.*?)'/
-    id = string.match(regex)
+    id = string.scan(regex)
     parsed_string.id = id[1] if id
 
     #title
