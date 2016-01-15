@@ -1,21 +1,21 @@
 require_relative 'dom_reader'
 
+Tag = Struct.new(:type, :text, :classes, :id, :title, :depth, :children, , :closing_tag, :parent)
+
 class DomTree
-	
-Tag = Struct.new(:type, :classes, :id, :title, :text, :children, :parent)
-# :attributes that holds all html elements
-# Tag class
-# methods on tag class to retrieve that attribute 
-	attr_accessor :html_code, :root, :tag_type, :text_list
+
+	attr_accessor :html_code, :document_root, :tag_type, :text_list
 
   def initialize(html_code)
     file = File.open(html_code, "rb")
     html_code = file.read
     tags(html_code)
     text(html_code)
-    @root = nil
-    p @text_list
-    p @tag_type
+    @document_root = Tag.new('document', nil, nil, nil, nil, 0)
+    @depth = 0
+    @tree = nil
+    @all_tags = []
+    create_tree
   end
 
   #one array
@@ -37,32 +37,35 @@ Tag = Struct.new(:type, :classes, :id, :title, :text, :children, :parent)
     @text_list.flatten!
   end
 
-  def add_root_node(first_tag)
-    @root = Tag.new(first_tag)
+  def combine_tags(tag_type, text_list)
+    depth = 0
+    opening_tag = /<[^\/].*?>/
+    tag_type.each_with_index do |tag, index|
+      if tag.match(opening_tag)
+        @all_tags << attributes(tag, depth, @text_list[index])
+        depth += 1
+      else
+        depth -= 1
+      end
+    @all_tags
   end
 
-  # def add_node(new_node)
-  #   new_node = Tag.new()
-  # end
+  def add_child_node(new_node, parent)
+    child_node.parent = Tag.new(parent)
+    child_node.type = new_node
+  end
 
-  # def add_child_node(new_node, parent)
-  # end
 
-  # def make_tree
-  #   #if we don't have a root, make one
-  #   unless @root
-  #     add_root_node(@tag_type[0]) 
-  #   end
+  def create_tree
+    current_node = @document_root
+    current_depth = current_node.depth
 
-  #   tags = []
-  #   tags << @root 
-  #   while move = tags.pop
-  #     move.children = make_children(tags)
-  #     move.children.each do |next_tag|
-  #       tags << next_tag unless next_tag.depth == max_depth
-  #     end
-  #   end
-  # end
+  end
+  
+  create all nodes
+  depth = 0
+  tag-list.each do tag
+    if tag.match ()
 
   def add_node
     unless @root
@@ -102,6 +105,8 @@ Tag = Struct.new(:type, :classes, :id, :title, :text, :children, :parent)
   #     add_node(???????????)
   #   end
   # end
+def add_node
+  if @node == nil
 
   # def add_node()
 		# if current node is nil
@@ -109,7 +114,7 @@ Tag = Struct.new(:type, :classes, :id, :title, :text, :children, :parent)
 		# else
 		# 	add_node (data)
 
-  # end
+  end
 end
 
 # html_string = "<div>  div text before  <p>    p text  </p>  <div>    more div text  </div>  div text after</div>"
