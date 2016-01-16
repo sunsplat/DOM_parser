@@ -1,47 +1,29 @@
-ParsedStringStruct = Struct.new(:type, :classes, :id, :name, :src, :title)
+Reader_Struct = Struct.new(:type, :classes, :id, :title)
 
 class DomReader
 
-  parsed_string = ParsedStringStruct.new
+  def self.read(string)
+    parsed_string = Reader_Struct.new
 
-  def initialize(string)
-    @string = string
-  end
-
-  def type  
-    regex = /<(.*?)\s/
+    regex = /<(.*?)[ >]/
     type = string.scan(regex)
-    parsed_string.type = type[1] if type
-  end
+    puts "String: #{string}"
+    puts "Type: #{type}"
+    parsed_string.type = type.first.first if type && type.first
 
-  def classes
-    regex =/class='(.*?)'/
+    regex =/class="(.*?)"/
     classes = string.scan(regex)
-    parsed_string.classes = classes[1] if classes
-  end
+    parsed_string.classes = classes.first.first if classes && classes.first
 
-  def id
-    regex = /id='(.*?)'/
+    regex = /id="(.*?)"/
     id = string.scan(regex)
-    parsed_string.id = id[1] if id
-  end
+    parsed_string.id = id.first.first if id && id.first
 
-  def title
-    regex = /title='(.*?)'/
+    regex = /title="(.*?)"/
     title = string.match(regex)
-    parsed_string.title = title[1] if title
+    parsed_string.title = title.first.first if title && title.first
+
+    return parsed_string
   end
 
 end
-
-# parse_tag("<p class='foo bar' id='baz'>")
-
-# parse_tag("<p class='foo bar' id='baz' name='fozzie'>")
-
-# parse_tag("<div id='bim'>")
-
-# parse_tag("<img src='http://www.example.com' title='funny things'>")
-
-
-#parsed_string = Struct.new(:type,:class,:id,:name)
-
