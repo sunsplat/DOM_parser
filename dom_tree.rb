@@ -29,7 +29,7 @@ class DomTree
     closing_tag = /(<\/)/
     tags.each_with_index do |tag, index|
       unless tag.match(closing_tag)
-        attributes = DomReader.read(tag)
+        attributes = DomParser.parse(tag)
         tag = Tag.new(tag, depth, current_tag, nil, nil, attributes) 
 
         current_tag.children = [] unless current_tag.children

@@ -1,8 +1,8 @@
 Reader_Struct = Struct.new(:type, :classes, :id, :title)
 
-class DomReader
+class DomParser
 
-  def self.read(string)
+  def self.parse(string)
     parsed_string = Reader_Struct.new
 
     regex = /<(.*?)[ >]/
