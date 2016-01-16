@@ -1,6 +1,6 @@
 require_relative 'dom_reader'
 
-Tag = Struct.new(:type, :text, :classes, :id, :title, :depth, :children, , :closing_tag, :parent)
+Tag = Struct.new(:type, :depth, :parent, :closing_tag, :children, :attributes)
 
 class DomTree
 
@@ -9,80 +9,107 @@ class DomTree
   def initialize(html_code)
     file = File.open(html_code, "rb")
     html_code = file.read
-    tags(html_code)
-    text(html_code)
-    @document_root = Tag.new('document', nil, nil, nil, nil, 0)
+    @tag_type = tags(html_code)
+    @document_root = Tag.new('document', 0, nil)
     @depth = 0
-    @tree = nil
     @all_tags = []
-    create_tree
+    # create_tree
+    create_tree(@tag_type)
   end
 
   #one array
   def tags(html_code)
-    regex = /<.*?>/
+    regex = /<.*?>|(?<=>).*?(?=<)/
     @tag_type = html_code.scan(regex)
     @tag_type.shift
+    @tag_type
   end
 
-  #array of arrays
-  def text(html_code)
-    regex = />(.*?)</
-    @text_list = html_code.scan(regex)
-    @text_list.each do |text|
-      text.each do |text_item|
-      text_item.strip!
+  def create_tree(tags)
+    depth = 1
+    closing_tag = /(<\/)/
+    tags.each_with_index do |tag, index|
+      if tag.match(closing_tag)
+        add_closing_tag(tag, depth)
+        depth -= 1
+      else
+        @all_tags << create_child(tag, depth)
+        depth += 1
       end
     end
-    @text_list.flatten!
-  end
-
-  def combine_tags(tag_type, text_list)
-    depth = 0
-    opening_tag = /<[^\/].*?>/
-    tag_type.each_with_index do |tag, index|
-      if tag.match(opening_tag)
-        @all_tags << attributes(tag, depth, @text_list[index])
-        depth += 1
-      else
-        depth -= 1
-      end
     @all_tags
   end
 
-  def add_child_node(new_node, parent)
-    child_node.parent = Tag.new(parent)
-    child_node.type = new_node
-  end
-
-
-  def create_tree
-    current_node = @document_root
-    current_depth = current_node.depth
-
-  end
-  
-  create all nodes
-  depth = 0
-  tag-list.each do tag
-    if tag.match ()
-
-  def add_node
-    unless @root
-      add_root_node(@tag_type[0])
-    end
-
-    @tag_type.each do |tag|
-      regex = /<\//
-      if !tag.match(regex)
-        return
-      else
-        tag = Tag.new(tag)
-        puts tag
-        text_list_index += 1
+  def add_closing_tag(tag, depth)
+    depth = depth
+    @all_tags.each do |tag|
+      if tag.depth == depth 
+        same_depth_tags << tag
+      end
+      same_depth_tags.each do |tag|
+        if !tag.closing_tag
+          tag.closing_tag = tag
+        end
       end
     end
+    @all_tags
   end
+
+  #check the depth level
+  #find the other elements in that depth
+  #find the first match that doesn't have a child
+  #   tag.closing_tag = tag
+  # end
+
+    # opening_tag = /<[^\/].*?>/
+  def create_child(tag, depth)
+    current_node = @document_root
+    depth = current_node.depth 
+    until depth == 6 && current_node == nil
+      new_tag = Tag.new(tag, depth, current_node, nil, [])
+
+    previous_node = current_node
+
+    end
+    # new_tag.closing_tag = tag.match(/(<\/.*?)/)
+
+    return new_tag
+  end
+
+
+  # def add_child_node(new_node, parent)
+  #   child_node.parent = Tag.new(parent)
+  #   child_node.type = new_node
+  # end
+
+
+  # def create_tree
+  #   current_node = @document_root
+  #   current_depth = current_node.depth
+
+  # end
+  
+  # create all nodes
+  # depth = 0
+  # tag-list.each do tag
+  #   if tag.match ()
+
+  # def add_node
+  #   unless @root
+  #     add_root_node(@tag_type[0])
+  #   end
+
+  #   @tag_type.each do |tag|
+  #     regex = /<\//
+  #     if !tag.match(regex)
+  #       return
+  #     else
+  #       tag = Tag.new(tag)
+  #       puts tag
+  #       text_list_index += 1
+  #     end
+  #   end
+  # end
 
   # def add_child_node(tag)
         
@@ -105,22 +132,12 @@ class DomTree
   #     add_node(???????????)
   #   end
   # end
-def add_node
-  if @node == nil
 
-  # def add_node()
-		# if current node is nil
-		# 	new structures
-		# else
-		# 	add_node (data)
-
-  end
 end
-
 # html_string = "<div>  div text before  <p>    p text  </p>  <div>    more div text  </div>  div text after</div>"
 
 tree = DomTree.new('text.html')
-tree.add_node
+p tree
 #tag_type
 #["<div>", "<p>", "</p>", "<div>", "</div>", "</div>"] 
 

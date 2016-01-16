@@ -1,36 +1,37 @@
-class DomReader
-#take in a string from an html file
-#parse into hash or struct (regex)
-#likely multiple regex's 
-
 ParsedStringStruct = Struct.new(:type, :classes, :id, :name, :src, :title)
 
-  def initialize(string)
-    
-	parsed_string = ParsedStringStruct.new
+class DomReader
 
-	#type
+  parsed_string = ParsedStringStruct.new
+
+  def initialize(string)
+    @string = string
+  end
+
+  def type  
     regex = /<(.*?)\s/
     type = string.scan(regex)
     parsed_string.type = type[1] if type
+  end
 
-    #class
+  def classes
     regex =/class='(.*?)'/
     classes = string.scan(regex)
     parsed_string.classes = classes[1] if classes
+  end
 
-    #id
+  def id
     regex = /id='(.*?)'/
     id = string.scan(regex)
     parsed_string.id = id[1] if id
+  end
 
-    #title
+  def title
     regex = /title='(.*?)'/
     title = string.match(regex)
     parsed_string.title = title[1] if title
-
-    puts "Parsed String is #{parsed_string}"
   end
+
 end
 
 # parse_tag("<p class='foo bar' id='baz'>")
